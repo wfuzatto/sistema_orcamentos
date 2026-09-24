@@ -1,6 +1,6 @@
 <?php require 'includes/header.php';
-$stats=['Orçamentos'=>(int)$pdo->query("SELECT COUNT(*) FROM orcamentos")->fetchColumn(),'Clientes'=>(int)$pdo->query("SELECT COUNT(*) FROM clientes WHERE ativo=1")->fetchColumn(),'Produtos'=>(int)$pdo->query("SELECT COUNT(*) FROM produtos WHERE ativo=1")->fetchColumn(),'Serviços'=>(int)$pdo->query("SELECT COUNT(*) FROM servicos WHERE ativo=1")->fetchColumn()];
-$ultimos=$pdo->query("SELECT o.*,c.nome cliente FROM orcamentos o JOIN clientes c ON c.id=o.cliente_id ORDER BY o.id DESC LIMIT 8")->fetchAll();?>
+$stats=['Orçamentos'=>(int)$pdo->query("SELECT COUNT(*) FROM orcamentos")->fetchColumn(),'Clientes'=>(int)$pdo->query("SELECT COUNT(*) FROM orcamentos_clientes WHERE ativo=1")->fetchColumn(),'Produtos'=>(int)$pdo->query("SELECT COUNT(*) FROM orcamentos_produtos WHERE ativo=1")->fetchColumn(),'Serviços'=>(int)$pdo->query("SELECT COUNT(*) FROM orcamentos_servicos WHERE ativo=1")->fetchColumn()];
+$ultimos=$pdo->query("SELECT o.*,c.nome cliente FROM orcamentos_orcamentos o JOIN orcamentos_clientes c ON c.id=o.cliente_id ORDER BY o.id DESC LIMIT 8")->fetchAll();?>
 <section class="hero"><h1>Orçamentos profissionais</h1><p>Cadastre sua base comercial, monte propostas rapidamente e gere PDFs padronizados com a identidade da Prodatas.</p><a class="btn success" href="orcamento_editar.php">Criar novo orçamento</a></section>
 <div class="grid"><?php foreach($stats as $k=>$v):?><div class="card"><div class="metric"><?= $v ?></div><div class="muted"><?= e($k) ?></div></div><?php endforeach;?></div>
 <div class="page-head"><h2>Últimos orçamentos</h2><a class="btn" href="orcamentos.php">Ver todos</a></div><table><thead><tr><th>Nº</th><th>Cliente</th><th>Título</th><th>Emissão</th><th>Status</th><th></th></tr></thead><tbody>
