@@ -1,0 +1,40 @@
+name: Bundle PHP dependencies
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - composer.json
+      - .github/workflows/bundle-php-dependencies.yml
+
+permissions:
+  contents: write
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+
+      - name: Install production dependencies
+        run: composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
+
+      - name: Commit bundled dependencies
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f vendor composer.lock
+          if git diff --cached --quiet; then
+            echo "Dependencies already bundled."
+            exit 0
+          fi
+          git commit -m "build: bundle Dompdf runtime dependencies"
+          git push
