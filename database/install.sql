@@ -1,9 +1,89 @@
-CREATE DATABASE IF NOT EXISTS sistema_orcamentos_orcamentos CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE sistema_orcamentos_orcamentos;
-CREATE TABLE IF NOT EXISTS orcamentos_orcamentos_configuracoes(id TINYINT PRIMARY KEY,nome_empresa VARCHAR(150) NOT NULL,razao_social VARCHAR(180),cnpj VARCHAR(30),endereco VARCHAR(255),telefone VARCHAR(60),email VARCHAR(150),site VARCHAR(150),historia TEXT,texto_rodape TEXT,logo_path VARCHAR(255),cor_primaria VARCHAR(20) NOT NULL DEFAULT '#0b3a63',atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP);
-INSERT INTO orcamentos_orcamentos_configuracoes(id,nome_empresa,historia,texto_rodape) VALUES(1,'Prodatas Telecom','A Prodatas atua com soluções em conectividade, tecnologia e serviços, desenvolvendo projetos com foco em confiabilidade, desempenho e atendimento próximo ao cliente.','Obrigado pela oportunidade de apresentar esta proposta.') ON DUPLICATE KEY UPDATE id=id;
-CREATE TABLE IF NOT EXISTS orcamentos_orcamentos_clientes(id INT AUTO_INCREMENT PRIMARY KEY,nome VARCHAR(180) NOT NULL,documento VARCHAR(30),contato VARCHAR(120),email VARCHAR(150),telefone VARCHAR(60),endereco VARCHAR(255),cidade VARCHAR(120),uf CHAR(2),observacoes TEXT,ativo TINYINT(1) NOT NULL DEFAULT 1,criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
-CREATE TABLE IF NOT EXISTS orcamentos_orcamentos_produtos(id INT AUTO_INCREMENT PRIMARY KEY,codigo VARCHAR(50),nome VARCHAR(180) NOT NULL,descricao TEXT,unidade VARCHAR(20) NOT NULL DEFAULT 'un',preco DECIMAL(12,2) NOT NULL DEFAULT 0,ativo TINYINT(1) NOT NULL DEFAULT 1,criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
-CREATE TABLE IF NOT EXISTS orcamentos_orcamentos_servicos(id INT AUTO_INCREMENT PRIMARY KEY,codigo VARCHAR(50),nome VARCHAR(180) NOT NULL,descricao TEXT,unidade VARCHAR(20) NOT NULL DEFAULT 'serv',preco DECIMAL(12,2) NOT NULL DEFAULT 0,ativo TINYINT(1) NOT NULL DEFAULT 1,criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
-CREATE TABLE IF NOT EXISTS orcamentos_orcamentos(id INT AUTO_INCREMENT PRIMARY KEY,numero INT NOT NULL UNIQUE,cliente_id INT NOT NULL,titulo VARCHAR(200) NOT NULL,data_emissao DATE NOT NULL,validade_dias INT NOT NULL DEFAULT 15,status ENUM('rascunho','enviado','aprovado','recusado','cancelado') NOT NULL DEFAULT 'rascunho',desconto DECIMAL(12,2) NOT NULL DEFAULT 0,condicoes_pagamento TEXT,prazo_entrega VARCHAR(180),observacoes TEXT,criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,CONSTRAINT fk_orc_cliente FOREIGN KEY(cliente_id) REFERENCES orcamentos_orcamentos_clientes(id));
-CREATE TABLE IF NOT EXISTS orcamentos_orcamentos_itens(id INT AUTO_INCREMENT PRIMARY KEY,orcamento_id INT NOT NULL,tipo ENUM('produto','servico','livre') NOT NULL,referencia_id INT,descricao VARCHAR(255) NOT NULL,detalhe TEXT,unidade VARCHAR(20) NOT NULL DEFAULT 'un',quantidade DECIMAL(12,3) NOT NULL DEFAULT 1,valor_unitario DECIMAL(12,2) NOT NULL DEFAULT 0,ordem INT NOT NULL DEFAULT 0,CONSTRAINT fk_item_orc FOREIGN KEY(orcamento_id) REFERENCES orcamentos_orcamentos(id) ON DELETE CASCADE);
+CREATE DATABASE IF NOT EXISTS sistema_orcamentos CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE sistema_orcamentos;
+
+CREATE TABLE IF NOT EXISTS orcamentos_configuracoes (
+ id TINYINT PRIMARY KEY,
+ nome_empresa VARCHAR(150) NOT NULL,
+ razao_social VARCHAR(180),
+ cnpj VARCHAR(30),
+ endereco VARCHAR(255),
+ telefone VARCHAR(60),
+ email VARCHAR(150),
+ site VARCHAR(150),
+ historia TEXT,
+ texto_rodape TEXT,
+ logo_path VARCHAR(255),
+ cor_primaria VARCHAR(20) NOT NULL DEFAULT '#0b3a63',
+ atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+INSERT INTO orcamentos_configuracoes(id,nome_empresa,historia,texto_rodape)
+VALUES(1,'Prodatas Telecom','A Prodatas atua com soluções em conectividade, tecnologia e serviços, desenvolvendo projetos com foco em confiabilidade, desempenho e atendimento próximo ao cliente.','Obrigado pela oportunidade de apresentar esta proposta.')
+ON DUPLICATE KEY UPDATE id=id;
+
+CREATE TABLE IF NOT EXISTS orcamentos_clientes (
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ nome VARCHAR(180) NOT NULL,
+ documento VARCHAR(30),
+ contato VARCHAR(120),
+ email VARCHAR(150),
+ telefone VARCHAR(60),
+ endereco VARCHAR(255),
+ cidade VARCHAR(120),
+ uf CHAR(2),
+ observacoes TEXT,
+ ativo TINYINT(1) NOT NULL DEFAULT 1,
+ criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS orcamentos_produtos (
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ codigo VARCHAR(50),
+ nome VARCHAR(180) NOT NULL,
+ descricao TEXT,
+ unidade VARCHAR(20) NOT NULL DEFAULT 'un',
+ preco DECIMAL(12,2) NOT NULL DEFAULT 0,
+ ativo TINYINT(1) NOT NULL DEFAULT 1,
+ criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS orcamentos_servicos (
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ codigo VARCHAR(50),
+ nome VARCHAR(180) NOT NULL,
+ descricao TEXT,
+ unidade VARCHAR(20) NOT NULL DEFAULT 'serv',
+ preco DECIMAL(12,2) NOT NULL DEFAULT 0,
+ ativo TINYINT(1) NOT NULL DEFAULT 1,
+ criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS orcamentos_orcamentos (
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ numero INT NOT NULL UNIQUE,
+ cliente_id INT NOT NULL,
+ titulo VARCHAR(200) NOT NULL,
+ data_emissao DATE NOT NULL,
+ validade_dias INT NOT NULL DEFAULT 15,
+ status ENUM('rascunho','enviado','aprovado','recusado','cancelado') NOT NULL DEFAULT 'rascunho',
+ desconto DECIMAL(12,2) NOT NULL DEFAULT 0,
+ condicoes_pagamento TEXT,
+ prazo_entrega VARCHAR(180),
+ observacoes TEXT,
+ criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+ CONSTRAINT fk_orc_cliente FOREIGN KEY(cliente_id) REFERENCES orcamentos_clientes(id)
+);
+
+CREATE TABLE IF NOT EXISTS orcamentos_itens (
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ orcamento_id INT NOT NULL,
+ tipo ENUM('produto','servico','livre') NOT NULL,
+ referencia_id INT,
+ descricao VARCHAR(255) NOT NULL,
+ detalhe TEXT,
+ unidade VARCHAR(20) NOT NULL DEFAULT 'un',
+ quantidade DECIMAL(12,3) NOT NULL DEFAULT 1,
+ valor_unitario DECIMAL(12,2) NOT NULL DEFAULT 0,
+ ordem INT NOT NULL DEFAULT 0,
+ CONSTRAINT fk_item_orc FOREIGN KEY(orcamento_id) REFERENCES orcamentos_orcamentos(id) ON DELETE CASCADE
+);
