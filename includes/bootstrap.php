@@ -5,5 +5,5 @@ function money(float $v):string{return 'R$ '.number_format($v,2,',','.');}
 function redirect(string $u):never{header('Location: '.$u);exit;}
 function flash(string $t,string $m):void{$_SESSION['flash']=['type'=>$t,'message'=>$m];}
 function getFlash():?array{$f=$_SESSION['flash']??null;unset($_SESSION['flash']);return $f;}
-function configEmpresa(PDO $pdo):array{$r=$pdo->query("SELECT * FROM orcamentos_orcamentos_configuracoes WHERE id=1")->fetch();return $r?:[];}
+function configEmpresa(PDO $pdo):array{$r=$pdo->query("SELECT * FROM orcamentos_configuracoes WHERE id=1")->fetch();return $r?:[];}
 function proximoNumero(PDO $pdo):int{return (int)$pdo->query("SELECT COALESCE(MAX(numero),0)+1 FROM orcamentos_orcamentos")->fetchColumn();}
