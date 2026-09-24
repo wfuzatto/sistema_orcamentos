@@ -1,4 +1,3 @@
-/vendor/
 /uploads/*
 !/uploads/.gitkeep
 /config/database.local.php
